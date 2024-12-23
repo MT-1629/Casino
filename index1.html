@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>Casino</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <link rel='stylesheet' type='text/css' media='screen' href='main.css'>
+    <script src='main.js'></script>
+    <style>
+        body{
+            background-image: url(img/fundo.gif);
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-position-y: 30%;
+        }
+        table{
+            text-align: center;
+            font-size: 25px;
+            font-family: Arial, sans-serif;
+            background-color: transparent;
+            width: 100%;
+            height: 100%;
+            position: relative;
+            margin-top: 0%;
+            text-shadow: white;
+            font-weight: bold;
+        }
+        tr, td{
+            width: 20%;
+            height: 20%;
+        }
+        .letras{
+            text-shadow: 0 0 15px white;
+        }
+        .inputNome{
+            width: 70%;
+        }
+        .pistas{
+            width: 35%;
+            border-color: white;
+            border: black;
+            font-size: 17px;
+        }
+        .inputs{
+            border-color: white;
+            border: 1px solid black;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <script>  
+        //Gera o número aleatório a partir da função apostar  
+        function gerar(){
+            let a = Math.floor(Math.random() * 10) + 1;
+            return a
+        }
+
+        //Dá início à aposta através da geração de um número aleatória e inicializando as várias variáveis
+        function apostar(){
+            //Vai buscar a função "gerar" e processa-a
+            let chave_2 = gerar();
+            document.getElementById("chave_2").value = chave_2;
+            
+            //Coloca o dinheiro a 0 - corresponde ao saldo corrente
+            let b = 0
+            document.getElementById("dinheiro").innerHTML = "Saldo: " + b + " €"
+            document.getElementById("dinheiro").value = b
+            
+            //Cria a palavra histórico
+            //document.getElementById("myHistory").innerHTML = "Histórico:";
+            document.getElementById("myHistory").value = "Histórico:";
+           
+            //Número de tentativas inicial
+            document.getElementById("ntentativas").value = 0;
+            document.getElementById("ntentativas").innerHTML = "Nº de tentativas: " + 0;
+            
+            //Histórico de pistas inicial
+            document.getElementById("pistas").value = "";
+            
+            //Escolha entre ter pistas ou não ter pistas (botões iniciais)
+            document.getElementById("table0").hidden = true;
+            document.getElementById("table1").hidden = false;
+        }
+
+        //A partir do saldo existente, soma a quantidade de dinheiro indicado após carregar no botão "carregar saldo"
+        function carregarSaldo(){
+            //Se a string está vazia atribui ao saldo o valor 0
+            let a = 0;
+            let text = document.getElementById("carregarSaldo");
+
+            //Testa se a string está vazia
+            if(text.value != ""){
+                a = parseFloat(document.getElementById("carregarSaldo").value);
+            }
+            if(parseFloat(document.getElementById("carregarSaldo").value)<=0){
+                window.alert("Tens de inserir um saldo superior a 0")
+            }
+
+            //Carrega o saldo
+            let b = parseFloat(document.getElementById("dinheiro").value);
+            let c = a+b;
+            document.getElementById("dinheiro").innerHTML = "Saldo: " + c + " €"
+            document.getElementById("dinheiro").value = c
+        }
+
+        //A partir do saldo existente, soma a quantidade de dinheiro indicado pelas notas ao valor guardado no input "carregarSaldo"
+        //que vai ser usado para carregar o saldo
+        function carregarSaldoNota(value){
+            //Se a string está vazia atribui ao saldo o valor 0
+            let a = 0;
+            let text = document.getElementById("carregarSaldo");
+            
+                //Testa se a string está vazia
+                if(text.value != ""){
+                    a = parseFloat(document.getElementById("carregarSaldo").value);
+                }
+
+            //Soma o valor ao input "carregarSaldo"
+            let c = a+value;
+            document.getElementById("carregarSaldo").innerHTML = c;
+            document.getElementById("carregarSaldo").value = c;
+        }
+
+        //A partir do valor da aposta existente, soma a quantidade de dinheiro indicado pelas notas guardado no input "aposta" 
+        //que vai ser usado para definir o valor da aposta
+        function ApostarNota(value){
+            //Se a string está vazia atribui ao valor da aposta o valor 0
+            let a = 0;
+            let text = document.getElementById("aposta");
+
+            //Testa se a string está vazia
+            if(text.value != ""){
+                a = parseFloat(document.getElementById("aposta").value);
+            }
+
+            //Soma o valor ao input "aposta"
+            let b = a+value;
+            document.getElementById("aposta").innerHTML = b;
+            document.getElementById("aposta").value = b;
+        }
+
+        //Cria o histórico
+        function adicionaHistorico(){
+            let myHist = document.getElementById("myHistory").value;
+            let myHistory = myHist + "<br>" + document.getElementById("valor_1").value;
+            document.getElementById("myHistory").innerHTML = myHistory;
+            document.getElementById("myHistory").value = myHistory;
+        }
+
+        //Quando se ganha
+        function ganhar (){
+            let a = parseFloat(document.getElementById("dinheiro").value);
+            let b = parseFloat(document.getElementById("aposta").value);
+            let d = parseFloat(document.getElementById("chave_2").value);
+            let e = a+b;
+            document.body.style.backgroundImage = "url('img/win.gif')";
+            document.body.style.backgroundPositionY = "25%"
+            document.getElementById("valor_1").readOnly = true;
+            document.getElementById("aposta").readOnly = true;
+            document.getElementById("chave_2").innerHTML = "Resposta Certa: "+ d;
+            document.getElementById("dinheiro").value = e;
+            document.getElementById("dinheiro").innerHTML = "Saldo: " + e + " €";
+
+            adicionaHistorico();
+
+            let saldo = document.getElementById("dinheiro").value;
+
+            //Se a pessoa tiver escolhido "com pistas"
+            if(document.getElementById("comPistas").value==true){
+                let temp = saldo;
+                saldo = temp*0.9;
+                document.getElementById("dinheiro").value = saldo;
+                document.getElementById("dinheiro").innerHTML = "Saldo: " + saldo + " €";
+            }
+
+            //Identifica o nome da pessoa
+            let nome = document.getElementById("nome").value;
+
+            //Cria o windows alert
+            let str = "Fim de Jogo! "+ "Parabéns " + nome + ". " + "Saldo final é " + saldo; 
+            window.alert(str);
+            
+            //Para o Cheque, ainda não está pronto
+            document.getElementById("table1").hidden = true;
+            let str1 = "De: Casino" + "<br>" + "Para: " + document.getElementById("nome").value + "<br>" + "Valor do cheque: " + document.getElementById("dinheiro").value + " €" + "<br>" + "Pode levantar o seu cheque na receção!";
+            document.getElementById("textoCheque").innerHTML = str1;
+            document.getElementById("table2").hidden = false;
+        }
+
+        //Quando se perde
+        function perder(){
+            let a = parseFloat(document.getElementById("dinheiro").value);
+            let b = parseFloat(document.getElementById("aposta").value);
+
+            let e = a-b;
+            document.body.style.backgroundImage = "url('img/lose.gif')";
+            document.body.style.backgroundPositionY = "10%";
+            document.body.style.backgroundColor = "red";
+            document.getElementById("dinheiro").value = e
+            document.getElementById("dinheiro").innerHTML = "Saldo: " + e + " €";
+            adicionaHistorico();
+            adicionaPistas();   
+        }
+        
+        //Cria as pistas
+        function adicionaPistas(){
+            let c = parseFloat(document.getElementById("valor_1").value);
+            let d = parseFloat(document.getElementById("chave_2").value);
+
+            //Pistas iniciais
+            let str ="";
+
+            //Primeira pista
+            if(c<d){
+                str = "O valor certo é maior do que o apostado"
+            } else {
+                str = "O valor certo é menor do que o apostado";
+            }
+
+            //Se a pessoas escolheu "com pistas"
+            if (document.getElementById("comPistas").value==true){
+
+                //Segunda pista
+                if(document.getElementById("ntentativas").value>=2){
+                    if(d%2==0){
+                        str1 = str;
+                        str = str1 + "<br>" + "O valor certo é um número par.";
+                    }else{
+                        str1 = str;
+                        str = str1 + "<br>" + "O valor certo é um número impar.";
+                    }   
+                }
+
+                //Terceira pista    
+                if(document.getElementById("ntentativas").value>=3){
+                    if(d%2==0) {
+                        if (d%4==0){
+                            str1 = str;
+                            str = str1 + "<br>" + "O valor certo é divisível por 4";
+                        }else {
+                            str1 = str;
+                            str = str1 + "<br>" + "O valor certo não é divisível por 4";
+                        }
+                    }else { //impar
+                        if (d%3==0){
+                            str1 = str;
+                            str = str1 + "<br>" + "O valor certo é divisível por 3";
+                        }
+                        else {
+                            str1 = str;
+                            str = str1 + "<br>" + "O valor certo não é divisível por 3";
+                        }
+                    }
+                }
+
+                //Quarta pista
+                if(document.getElementById("ntentativas").value>=4){
+                    str1 = str;
+                    str = str1 + "<br>" + "As pistas esgotaram-se";
+                }                
+            }
+
+            //Apresenta as pistas
+            document.getElementById("pistas").innerHTML = str;
+        }
+
+        //Calcula o dinheiro durante o jogo
+        //Processa se a resposta está certa ou errada
+        function dinheiro(){
+            let a = parseFloat(document.getElementById("dinheiro").value);
+            let b = parseFloat(document.getElementById("aposta").value);
+
+            let c = parseFloat(document.getElementById("valor_1").value);
+            let d = parseFloat(document.getElementById("chave_2").value);
+            
+            //Verifica se existe saldo inicial
+            if( isNaN(a) || (a<=0)){
+                window.alert("Tens de inserir um saldo superior a 0")
+            }else{
+
+                //Verifica se existe valor (dinheiro) apostado
+                if(isNaN(b)){
+                    window.alert("Tens de inserir um valor para a aposta inferior ou igual ao teu saldo")
+                }else{
+                    
+                    //Verifica se existe o número que pretende apostar e se este é válido
+                    if( isNaN(c) || (c>10) || (c<=0)){
+                        window.alert("Tens de inserir uma aposta entre 1 e 10")
+                    }else{
+
+                        //Verifica se o valor apostado (dinheiro) é superior a 1
+                        if(b<1){
+                            window.alert("Tens de inserir um valor para a aposta superior a 0");
+                        }else {
+
+                            //Verifica de existe saldo suficiente ou se não existe saldo
+                            if((b>a) && (b>0)){
+                                window.alert("Não tens saldo suficiente");
+
+                            //Conta o número de tentativas da aposta
+                            }else{
+                                let ntentativas = parseFloat(document.getElementById("ntentativas").value);
+                                let ntentativas_1 = ntentativas + 1;
+                                document.getElementById("ntentativas").innerHTML = "Nº de tentativas: " + ntentativas_1;
+                                document.getElementById("ntentativas").value = ntentativas_1;
+
+                                //Determina se o jogador ganhou ou não
+                                if(c==d){
+                                    ganhar();
+                                }else{
+                                    perder();
+                                }                               
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        //Define se a pessoa não quer pistas - torna as pistas não visíveis 
+        function semPistas(){
+            document.getElementById("comPistas").value = false;
+            apostar();
+        }
+
+        //Define se a pessoa quer pistas - torna as pistas visíveis
+        function comPistas(){
+            document.getElementById("comPistas").value = true;
+            apostar();
+        }
+    </script>
+
+    <table id="table1" hidden>
+        <tr style="height: 100px;"></tr>
+        <tr>
+            <td></td>
+            <td id="ntentativas" style="text-align: left;"></td>
+            <td id="chave_1"></td>
+            <td id="dinheiro" style="text-align: center;"></td>
+        </tr>
+        <tr style="height: 200px;"></tr>
+        <td></td>
+        <tr>
+            <td></td>
+            <td id="chave_2"></td>
+            <td>
+                <form>
+                    <label for="input_1">Número da aposta:</label>
+                    <input type="number" id="valor_1" min="1" max="10" class="inputs">
+                </form>
+                <form>
+                    <label for="valor_aposta"></label>
+                    <input type="number" id="aposta" min="1" class="inputs">
+                    <button type="button" onclick="dinheiro()" class="inputs">Apostar</button>
+                </form>
+            </td>
+            <td>
+                <form>
+                    <label for="carregarSaldo"></label>
+                    <input type="number" id="carregarSaldo" min="1" class="inputs">
+                </form>
+                <button type="button" onclick="carregarSaldo()" class="inputs">Carregar Saldo</button>
+            </td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td>
+                <button type="button" style="width: 50px;" onclick="ApostarNota(50)">
+                    <img src="img/nota50.jpg" style="width: 100%;">
+                </button>
+                <button type="button" style="width: 50px;" onclick="ApostarNota(100)">
+                    <img src="img/nota100.jpg" style="width: 100%;">
+                </button>
+                <button type="button" style="width: 50px;" onclick="ApostarNota(200)">
+                    <img src="img/nota200.jpg" style="width: 100%;">
+                </button>
+                <button type="button" style="width: 50px;" onclick="ApostarNota(500)">
+                    <img src="img/nota500.jpeg" style="width: 100%;">
+                </button>
+            </td>
+            <td>
+                <button type="button" style="width: 50px;" onclick="carregarSaldoNota(50)">
+                    <img src="img/nota50.jpg" style="width: 100%;">
+                </button>
+                <button type="button" style="width: 50px;" onclick="carregarSaldoNota(100)">
+                    <img src="img/nota100.jpg" style="width: 100%;">
+                </button>
+                <button type="button" style="width: 50px;" onclick="carregarSaldoNota(200)">
+                    <img src="img/nota200.jpg" style="width: 100%;">
+                </button>
+                <button type="button" style="width: 50px;" onclick="carregarSaldoNota(500)">
+                    <img src="img/nota500.jpeg" style="width: 100%;">
+                </button>
+            </td>
+        </tr>
+        <tr>
+            <td></td>
+            <td id="myHistory"></td>
+            <td id="pistas"></td>
+            <td></td>
+            <td>
+            </td>
+        </tr>  
+    </table>
+    <table id="table0">
+        <tr>
+        <td>
+        </td>
+        <td>
+            Insira Nome:
+            <form>
+                <input type="string" id="nome" class="inputNome">
+            </form>
+        </tr> 
+        <tr>
+            <td id="comPistas"></td>
+            <td>
+            <button type="button" onclick="semPistas()" class="pistas">Sem Pistas</button>
+            <button type="button" onclick="comPistas()" class="pistas">Com Pistas</button>
+            </td>
+            <td></td>
+        </tr>
+    </table>
+    <table id="table2" hidden>
+        <tr style="height: 100px;"></tr>
+        <tr>
+            <td></td>
+            <td style="text-align: left; background-color: orangered;" id="textoCheque"></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td><a href="index.html"><button type="button" class="inputs">Voltar ao Início</button></a></td>
+            <td></td>
+        </tr>
+    </table>
+</body>
+</html>
